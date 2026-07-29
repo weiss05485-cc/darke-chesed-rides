@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>דרכי חסד — מערכת שיבוץ נסיעות</title>
+<style>
+  :root{
+    --green-0:#0a2016;
+    --green-1:#0e2b1f;
+    --green-2:#14392a;
+    --green-3:#1c4a37;
+    --green-line:#2a5c45;
+    --gold:#f2d15a;
+    --gold-2:#e6bf3f;
+    --gold-soft:#f7e089;
+    --yellow-glow:#fff27a;
+    --cream:#f4efe2;
+    --muted:#a9c4b5;
+    --danger:#e06a5a;
+    --danger-bg:#3a1f1b;
+    --ok:#5fd08a;
+    --card:rgba(255,255,255,.04);
+    --card-2:rgba(255,255,255,.06);
+    --shadow:0 10px 30px rgba(0,0,0,.35);
+    font-synthesis:none;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    font-family:"Segoe UI","Assistant","Arial",sans-serif;
+    background:
+      radial-gradient(1200px 600px at 70% -10%, rgba(242,209,90,.10), transparent 60%),
+      radial-gradient(900px 500px at 10% 110%, rgba(95,208,138,.06), transparent 60%),
+      linear-gradient(160deg,var(--green-1),var(--green-0) 60%);
+    color:var(--cream);
+    min-height:100vh;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--gold-soft)}
+  .wrap{max-width:1150px;margin:0 auto;padding:18px 16px 60px}
+
+  /* ===== Header / Logo ===== */
+  header{display:flex;align-items:center;gap:18px;flex-wrap:wrap;padding:8px 4px 18px}
+  .logo{
+    position:relative;flex:0 0 auto;
+    width:132px;height:92px;border-radius:50%/50%;
+    border:3px solid var(--gold);
+    background:linear-gradient(160deg,var(--green-2),var(--green-0));
+    box-shadow:0 0 0 3px rgba(242,209,90,.18), inset 0 0 22px rgba(0,0,0,.5), var(--shadow);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;
+  }
+  .logo::before{
+    content:"";position:absolute;inset:6px;border-radius:50%/50%;
+    border:1px solid rgba(242,209,90,.45);pointer-events:none;
+  }
+  .logo .k{font-size:26px;font-weight:800;color:var(--gold);letter-spacing:1px;line-height:1;
+    text-shadow:0 1px 0 rgba(0,0,0,.5)}
+  .logo .s{font-size:10.5px;color:var(--gold-soft);margin-top:5px;letter-spacing:.5px}
+  .logo .t{font-size:8px;color:var(--muted);margin-top:3px}
+  .htext{flex:1 1 auto;min-width:220px}
+  .htext h1{margin:0;font-size:26px;color:var(--cream);font-weight:800}
+  .htext .sub{margin-top:4px;color:var(--gold-soft);font-size:15px;font-weight:600}
+  .htext .sub2{color:var(--muted);font-size:12.5px;margin-top:2px}
+  .bsd{width:100%;text-align:center;color:var(--muted);font-size:11px;letter-spacing:3px;margin-bottom:2px}
+
+  /* ===== Tabs ===== */
+  nav.tabs{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 20px}
+  .tab{
+    padding:11px 18px;border-radius:12px;cursor:pointer;user-select:none;
+    background:var(--card);border:1px solid var(--green-line);color:var(--cream);
+    font-size:15px;font-weight:600;transition:.15s;display:flex;align-items:center;gap:8px}
+  .tab:hover{background:var(--card-2)}
+  .tab.active{
+    background:linear-gradient(160deg,var(--gold),var(--gold-2));
+    color:#1a2b21;border-color:var(--gold);box-shadow:0 6px 16px rgba(242,209,90,.25);font-weight:800}
+  .tab .badge{background:rgba(0,0,0,.18);border-radius:20px;padding:1px 8px;font-size:12px;font-weight:800}
+  .tab.active .badge{background:rgba(0,0,0,.16)}
+
+  /* ===== Cards ===== */
+  .card{background:var(--card);border:1px solid var(--green-line);border-radius:16px;padding:20px;
+    box-shadow:var(--shadow);margin-bottom:18px}
+  .card h2{margin:0 0 14px;font-size:19px;color:var(--gold);display:flex;align-items:center;gap:9px}
+  .card h2 small{color:var(--muted);font-weight:500;font-size:13px}
+  .grid{display:grid;gap:14px}
+  .g2{grid-template-columns:1fr 1fr}
+  .g3{grid-template-columns:repeat(3,1fr)}
+  @media(max-width:760px){.g2,.g3{grid-template-columns:1fr}}
+
+  label.fld{display:block;margin-bottom:12px}
+  label.fld .lbl{display:block;font-size:13px;color:var(--muted);margin-bottom:6px;font-weight:600}
+  input,select,textarea{
+    width:100%;padding:11px 12px;border-radius:10px;font-size:15px;font-family:inherit;
+    background:rgba(0,0,0,.22);border:1px solid var(--green-line);color:var(--cream);outline:none}
+  input:focus,select:focus,textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(242,209,90,.15)}
+  input::placeholder{color:#6f8a7c}
+
+  .btn{
+    display:inline-flex;align-items:center;gap:8px;justify-content:center;
+    padding:11px 18px;border-radius:11px;border:1px solid var(--green-line);
+    background:var(--card-2);color:var(--cream);font-size:15px;font-weight:700;cursor:pointer;transition:.15s}
+  .btn:hover{background:rgba(255,255,255,.10)}
+  .btn.gold{background:linear-gradient(160deg,var(--gold),var(--gold-2));color:#1a2b21;border-color:var(--gold)}
+  .btn.gold:hover{filter:brightness(1.06)}
+  .btn.green{background:linear-gradient(160deg,#2f7d55,#256a48);color:#eafff2;border-color:#2f7d55}
+  .btn.ghost{background:transparent}
+  .btn.danger{background:var(--danger-bg);border-color:#6b2f28;color:#ff9d8f}
+  .btn.sm{padding:7px 12px;font-size:13px;border-radius:9px}
+  .btn.tiny{padding:5px 9px;font-size:12px;border-radius:8px}
+  .btn:disabled{opacity:.45;cursor:not-allowed}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .spacer{flex:1}
+
+  .pill{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700}
+  .pill.active{background:rgba(95,208,138,.15);color:var(--ok);border:1px solid rgba(95,208,138,.3)}
+  .pill.off{background:var(--danger-bg);color:#ff9d8f;border:1px solid #6b2f28}
+  .pill.gold{background:rgba(242,209,90,.14);color:var(--gold-soft);border:1px solid rgba(242,209,90,.3)}
+  .pill.grey{background:rgba(255,255,255,.06);color:var(--muted);border:1px solid var(--green-line)}
+  .pill.exact{background:rgba(95,208,138,.18);color:var(--ok);border:1px solid rgba(95,208,138,.35)}
+  .pill.near{background:rgba(242,209,90,.14);color:var(--gold-soft);border:1px solid rgba(242,209,90,.3)}
+
+  /* ===== Candidate list ===== */
+  .cand{display:flex;align-items:center;gap:14px;padding:14px;border-radius:13px;
+    background:var(--card-2);border:1px solid var(--green-line);margin-bottom:10px;transition:.15s}
+  .cand:hover{border-color:var(--gold)}
+  .cand .rank{width:34px;height:34px;border-radius:50%;flex:0 0 auto;display:flex;align-items:center;
+    justify-content:center;font-weight:800;font-size:15px;background:rgba(0,0,0,.25);color:var(--gold-soft)}
+  .cand.top .rank{background:linear-gradient(160deg,var(--gold),var(--gold-2));color:#1a2b21}
+  .cand .info{flex:1 1 auto;min-width:0}
+  .cand .nm{font-size:16px;font-weight:800;color:var(--cream)}
+  .cand .meta{font-size:12.5px;color:var(--muted);margin-top:3px;display:flex;gap:12px;flex-wrap:wrap}
+  .cand .acts{display:flex;gap:8px;flex-wrap:wrap}
+  .whyrec{font-size:12px;color:var(--gold-soft);margin-top:4px}
+
+  /* ===== Table ===== */
+  table{width:100%;border-collapse:collapse}
+  th,td{text-align:right;padding:11px 10px;border-bottom:1px solid var(--green-line);font-size:14px}
+  th{color:var(--muted);font-weight:700;font-size:12.5px;text-transform:none}
+  tr:hover td{background:rgba(255,255,255,.02)}
+  .hours-chips{display:flex;gap:5px;flex-wrap:wrap}
+  .hchip{background:rgba(242,209,90,.12);color:var(--gold-soft);border:1px solid rgba(242,209,90,.25);
+    border-radius:7px;padding:2px 8px;font-size:12px;font-weight:700}
+
+  /* ===== Stats ===== */
+  .stat{background:linear-gradient(160deg,var(--green-2),var(--green-1));border:1px solid var(--green-line);
+    border-radius:15px;padding:18px;text-align:center}
+  .stat .num{font-size:34px;font-weight:800;color:var(--gold)}
+  .stat .lbl{color:var(--muted);font-size:13px;margin-top:4px}
+  .bar-row{display:flex;align-items:center;gap:10px;margin-bottom:9px}
+  .bar-row .bn{width:130px;font-size:13.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .bar-track{flex:1;height:22px;background:rgba(0,0,0,.25);border-radius:8px;overflow:hidden}
+  .bar-fill{height:100%;background:linear-gradient(90deg,var(--gold-2),var(--gold));border-radius:8px;
+    display:flex;align-items:center;justify-content:flex-start;padding-inline-start:8px;color:#1a2b21;font-weight:800;font-size:12px}
+
+  .empty{text-align:center;color:var(--muted);padding:30px 10px;font-size:14px}
+  .empty .big{font-size:34px;margin-bottom:8px;opacity:.6}
+
+  /* ===== Modal ===== */
+  .overlay{position:fixed;inset:0;background:rgba(4,14,9,.72);display:none;align-items:center;
+    justify-content:center;z-index:50;padding:16px;backdrop-filter:blur(2px)}
+  .overlay.show{display:flex}
+  .modal{background:linear-gradient(160deg,var(--green-2),var(--green-1));border:1px solid var(--gold);
+    border-radius:18px;padding:22px;max-width:520px;width:100%;box-shadow:var(--shadow);max-height:90vh;overflow:auto}
+  .modal h3{margin:0 0 14px;color:var(--gold);font-size:18px}
+  .modal .desc{color:var(--muted);font-size:14px;margin-bottom:14px;line-height:1.5}
+
+  /* ===== Toast ===== */
+  #toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);
+    background:linear-gradient(160deg,var(--green-3),var(--green-2));border:1px solid var(--gold);
+    color:var(--cream);padding:13px 22px;border-radius:12px;font-weight:700;font-size:15px;
+    box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:.25s;z-index:80;max-width:90vw}
+  #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  #toast.ok{border-color:var(--ok)}
+  #toast.err{border-color:var(--danger)}
+
+  .hint{font-size:12px;color:var(--muted);margin-top:4px}
+  .hidden{display:none!important}
+  .foot{text-align:center;color:var(--muted);font-size:12px;margin-top:26px;line-height:1.7}
+  .hour-picker{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+  .hour-opt{padding:6px 11px;border-radius:9px;border:1px solid var(--green-line);background:rgba(0,0,0,.2);
+    cursor:pointer;font-size:13px;font-weight:700;color:var(--muted);user-select:none}
+  .hour-opt.on{background:linear-gradient(160deg,var(--gold),var(--gold-2));color:#1a2b21;border-color:var(--gold)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="bsd">בס״ד</div>
+  <header>
+    <div class="logo">
+      <div class="k">דרכי חסד</div>
+      <div class="s">דסאטמאר בני ברק</div>
+      <div class="t">עזר למשפחות</div>
+    </div>
+    <div class="htext">
+      <h1>מערכת שיבוץ נסיעות</h1>
+      <div class="sub">הסעות לבתי חולים · לְמַעַן עִיר עָלֶה וְנִתְעַלֶּה בְּרֶכֶב הוֹשַׁע נָא</div>
+      <div class="sub2">שיבוץ נהג לפי שעה · עדיפות למי שמזמן לא נסע · היסטוריה וסטטיסטיקות</div>
+    </div>
+  </header>
+
+  <nav class="tabs" id="tabs">
+    <div class="tab active" data-tab="new">🚗 נסיעה חדשה</div>
+    <div class="tab" data-tab="rides">📋 נסיעות <span class="badge" id="badgeOpen">0</span></div>
+    <div class="tab" data-tab="drivers">👥 נהגים <span class="badge" id="badgeDrivers">0</span></div>
+    <div class="tab" data-tab="dash">📊 דשבורד</div>
+  </nav>
+
+  <!-- ===================== TAB: NEW RIDE ===================== -->
+  <section id="tab-new">
+    <div class="card">
+      <h2>🚗 הכנסת נסיעה חדשה <small>מלא יעד ושעה — המערכת תמצא את הנהג המתאים</small></h2>
+      <div class="grid g3">
+        <label class="fld">
+          <span class="lbl">יעד — בית חולים</span>
+          <input id="rDest" list="hospitals" placeholder="לדוגמה: תל השומר" autocomplete="off">
+          <datalist id="hospitals">
+            <option value="תל השומר (שיבא)"><option value="איכילוב"><option value="בילינסון"><option value="מעייני הישועה">
+            <option value="לניאדו"><option value="הדסה עין כרם"><option value="הדסה הר הצופה"><option value="אסותא">
+            <option value="שערי צדק"><option value="וולפסון"><option value="קפלן"><option value="סורוקה">
+            <option value='רמב"ם'><option value="אסף הרופא"><option value="שניידר"><option value="מרכז רפואי אחר">
+          </datalist>
+        </label>
+        <label class="fld">
+          <span class="lbl">תאריך</span>
+          <input id="rDate" type="date">
+        </label>
+        <label class="fld">
+          <span class="lbl">שעה</span>
+          <input id="rTime" type="time">
+        </label>
+      </div>
+      <div class="grid g2">
+        <label class="fld">
+          <span class="lbl">שם הנוסע / מבקש הנסיעה <span style="opacity:.6">(רשות)</span></span>
+          <input id="rWho" placeholder="שם">
+        </label>
+        <label class="fld">
+          <span class="lbl">טלפון ליצירת קשר <span style="opacity:.6">(רשות)</span></span>
+          <input id="rPhone" placeholder="05x-xxxxxxx">
+        </label>
+      </div>
+      <label class="fld">
+        <span class="lbl">הערה <span style="opacity:.6">(רשות)</span></span>
+        <input id="rNote" placeholder="לדוגמה: כיסא גלגלים, חזרה ב-11:00...">
+      </label>
+      <div class="row">
+        <button class="btn gold" onclick="findDrivers()">🔍 מצא נהג מתאים</button>
+        <span class="hint" id="matchHint"></span>
+      </div>
+    </div>
+
+    <div class="card hidden" id="candCard">
+      <h2>🎯 נהגים זמינים <small id="candSub"></small></h2>
+      <div id="candExact"></div>
+      <div id="candNearWrap" class="hidden">
+        <div style="margin:16px 0 8px;color:var(--muted);font-size:13px;font-weight:700">נהגים בשעה קרובה (±90 דק׳)</div>
+        <div id="candNear"></div>
+      </div>
+      <div id="candEmpty" class="hidden empty">
+        <div class="big">😕</div>
+        אין נהג פנוי בשעה הזו. אפשר לשבץ ידנית מלשונית הנהגים, או לרשום את הנסיעה כפתוחה.
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== TAB: RIDES ===================== -->
+  <section id="tab-rides" class="hidden">
+    <div class="card">
+      <h2>📋 נסיעות פתוחות <small>ממתינות לשיבוץ</small></h2>
+      <div id="openRides"></div>
+    </div>
+    <div class="card">
+      <h2>🚕 נסיעות משובצות / בטיפול</h2>
+      <div id="assignedRides"></div>
+    </div>
+    <div class="card">
+      <h2>✅ היסטוריית נסיעות שהסתיימו <small id="histCount"></small></h2>
+      <div class="row" style="margin-bottom:12px">
+        <input id="histSearch" placeholder="חיפוש לפי נהג / יעד..." style="max-width:280px" oninput="renderRides()">
+        <div class="spacer"></div>
+        <button class="btn ghost sm" onclick="exportCSV()">⬇ ייצוא לאקסל (CSV)</button>
+      </div>
+      <div id="doneRides"></div>
+    </div>
+  </section>
+
+  <!-- ===================== TAB: DRIVERS ===================== -->
+  <section id="tab-drivers" class="hidden">
+    <div class="card">
+      <h2>👥 ניהול נהגים <small>הוספה · עריכה · סטטוס · חופשה</small></h2>
+      <div class="row" style="margin-bottom:14px">
+        <button class="btn gold" onclick="openDriverModal()">➕ הוסף נהג</button>
+        <input id="drvSearch" placeholder="חיפוש נהג..." style="max-width:260px" oninput="renderDrivers()">
+        <div class="spacer"></div>
+        <span class="hint" id="drvCountHint"></span>
+      </div>
+      <div style="overflow-x:auto">
+        <table id="driversTable">
+          <thead><tr>
+            <th>שם</th><th>טלפון</th><th>שעות נוחות</th><th>נסיעות (7 ימים)</th><th>סה״כ</th><th>נסיעה אחרונה</th><th>סטטוס</th><th></th>
+          </tr></thead>
+          <tbody id="driversBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== TAB: DASHBOARD ===================== -->
+  <section id="tab-dash" class="hidden">
+    <div class="grid g3" style="margin-bottom:18px">
+      <div class="stat"><div class="num" id="stTotal">0</div><div class="lbl">סה״כ נסיעות שבוצעו</div></div>
+      <div class="stat"><div class="num" id="stWeek">0</div><div class="lbl">נסיעות השבוע (7 ימים)</div></div>
+      <div class="stat"><div class="num" id="stOpen">0</div><div class="lbl">נסיעות פתוחות כרגע</div></div>
+    </div>
+    <div class="card">
+      <h2>🏆 מובילים השבוע <small>מי עשה הכי הרבה נסיעות ב-7 הימים האחרונים</small></h2>
+      <div id="topWeek"></div>
+    </div>
+    <div class="card">
+      <h2>💤 נהגים שעדיין לא נסעו השבוע <small>אלה שכדאי לפנות אליהם קודם</small></h2>
+      <div id="idleDrivers"></div>
+    </div>
+    <div class="card">
+      <h2>📈 סיכום כללי לפי נהג</h2>
+      <div style="overflow-x:auto">
+        <table>
+          <thead><tr><th>נהג</th><th>סה״כ נסיעות</th><th>השבוע</th><th>30 יום</th><th>נסיעה אחרונה</th></tr></thead>
+          <tbody id="dashTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <div class="foot">
+    דרכי חסד דסאטמאר בני ברק · מערכת שיבוץ נסיעות לבתי חולים<br>
+    כל הנתונים נשמרים מקומית בדפדפן שלך · <a href="#" onclick="doBackup();return false">גיבוי / ייצוא נתונים</a> ·
+    <a href="#" onclick="triggerRestore();return false">שחזור מגיבוי</a>
+    <input type="file" id="restoreFile" accept=".json" class="hidden" onchange="doRestore(event)">
+  </div>
+</div>
+
+<!-- ===== Driver Modal ===== -->
+<div class="overlay" id="driverOverlay">
+  <div class="modal">
+    <h3 id="drvModalTitle">הוספת נהג</h3>
+    <label class="fld"><span class="lbl">שם מלא</span><input id="dName" placeholder="שם הנהג"></label>
+    <label class="fld"><span class="lbl">מספר טלפון</span><input id="dPhone" placeholder="05x-xxxxxxx"></label>
+    <div class="fld">
+      <span class="lbl">שעות נוחות לנסיעה (בחר אחת או יותר)</span>
+      <div class="hour-picker" id="hourPicker"></div>
+      <div class="hint">אלה השעות שבהן נוח לנהג לקחת נסיעות. אפשר לבחור כמה.</div>
+    </div>
+    <label class="fld"><span class="lbl">הערה <span style="opacity:.6">(רשות)</span></span><input id="dNote" placeholder="לדוגמה: רק בבני ברק והסביבה"></label>
+    <div class="row" style="margin-top:6px">
+      <button class="btn gold" onclick="saveDriver()">💾 שמור</button>
+      <button class="btn ghost" onclick="closeModal('driverOverlay')">ביטול</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Status Modal ===== -->
+<div class="overlay" id="statusOverlay">
+  <div class="modal">
+    <h3>סטטוס נהג — <span id="stName"></span></h3>
+    <div class="desc">נהג בסטטוס "לא זמין" לא יופיע ברשימת הנהגים לשיבוץ עד לתאריך שתקבע (או עד שתחזיר אותו לפעיל ידנית).</div>
+    <div class="row" style="margin-bottom:14px">
+      <button class="btn green" onclick="setStatus('active')">✅ פעיל</button>
+      <button class="btn danger" onclick="setStatus('unavailable')">🚫 לא זמין / בחופש</button>
+    </div>
+    <label class="fld" id="untilWrap"><span class="lbl">לא זמין עד תאריך <span style="opacity:.6">(רשות — ריק = ללא הגבלה)</span></span><input id="stUntil" type="date"></label>
+    <div class="row">
+      <button class="btn gold" onclick="saveStatus()">💾 שמור סטטוס</button>
+      <button class="btn ghost" onclick="closeModal('statusOverlay')">ביטול</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Confirm Modal ===== -->
+<div class="overlay" id="confirmOverlay">
+  <div class="modal">
+    <h3 id="cfTitle">אישור</h3>
+    <div class="desc" id="cfDesc"></div>
+    <div class="row">
+      <button class="btn danger" id="cfYes">אישור</button>
+      <button class="btn ghost" onclick="closeModal('confirmOverlay')">ביטול</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+/* ================= STORAGE ================= */
+const LS_KEY = 'darkeChesed_v1';
+let state = {drivers:[], rides:[]};
+
+function save(){ localStorage.setItem(LS_KEY, JSON.stringify(state)); }
+function load(){
+  const raw = localStorage.getItem(LS_KEY);
+  if(raw){ try{ state = JSON.parse(raw); }catch(e){ state={drivers:[],rides:[]}; } }
+  if(!state.drivers || state.drivers.length===0){ seed(); save(); }
+}
+function uid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+
+/* ================= SEED (demo data) ================= */
+const HOUR_OPTIONS = ["06:00","07:00","08:00","09:00","10:00","11:00","12:00","13:00","14:00","15:00","16:00","17:00","18:00","19:00","20:00","21:00","22:00"];
+function seed(){
+  const names = ["משה פרידמן","יואל וייס","אהרן שטרן","דוד ברגר","שמעון הכט","נפתלי גרוס","יעקב לנדא","חיים רוט",
+    "ישראל כהנא","מנחם פוקס","אלימלך בראך","זלמן טייטלבוים","בערל שווארץ","מרדכי הורוביץ","יוסף גרינפלד",
+    "שלום דייטש","אברהם ווערצבערגער","עוזר קליין","יחזקאל פרלמוטר","נחום שפירא"];
+  function randHours(){
+    const pool=["07:00","08:00","09:00","10:00","13:00","14:00","15:00","16:00","19:00","20:00","21:00"];
+    const n=2+Math.floor(Math.random()*3); const set=new Set();
+    while(set.size<n) set.add(pool[Math.floor(Math.random()*pool.length)]);
+    return [...set].sort();
+  }
+  state.drivers = names.map((nm,i)=>({
+    id:uid(), name:nm,
+    phone:"05"+ (Math.floor(Math.random()*5)) +"-"+ String(1000000+Math.floor(Math.random()*8999999)),
+    hours:randHours(), status:"active", unavailableUntil:"", note:"", createdAt:Date.now()
+  }));
+  // a couple of demo statuses
+  state.drivers[7].status="unavailable"; state.drivers[7].unavailableUntil="";
+  state.drivers[13].note="רק בני ברק והסביבה";
+
+  // demo rides across the past week so the dashboard has data
+  const dest=["תל השומר (שיבא)","איכילוב","בילינסון","מעייני הישועה","לניאדו","הדסה עין כרם"];
+  state.rides=[];
+  const now=Date.now(), day=86400000;
+  const plan=[[0,3],[1,5],[2,1],[2,9],[3,4],[3,11],[4,2],[5,6],[5,0],[6,8],[1,12],[4,15],[2,3],[6,5],[0,10]];
+  plan.forEach((p,idx)=>{
+    const daysAgo=p[0], drvIdx=p[1];
+    const t=now - daysAgo*day - Math.floor(Math.random()*8)*3600000;
+    const d=new Date(t);
+    state.rides.push({
+      id:uid(), destination:dest[idx%dest.length], date:isoDate(d),
+      time:HOUR_OPTIONS[6+ (idx%8)], driverId:state.drivers[drvIdx].id,
+      who:"", phone:"", note:"", status:"done",
+      createdAt:t, assignedAt:t, doneAt:t
+    });
+  });
+}
+
+/* ================= HELPERS ================= */
+function isoDate(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function driverById(id){ return state.drivers.find(d=>d.id===id); }
+function timeToMin(t){ if(!t) return null; const [h,m]=t.split(':').map(Number); return h*60+(m||0); }
+function fmtDate(ts){ if(!ts) return '—'; const d=new Date(ts); return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear(); }
+function fmtDateShort(ts){ if(!ts) return '—'; const d=new Date(ts); return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0'); }
+function daysAgoTxt(ts){
+  if(!ts) return 'אף פעם';
+  const diff=Math.floor((Date.now()-ts)/86400000);
+  if(diff<=0) return 'היום';
+  if(diff===1) return 'אתמול';
+  return 'לפני '+diff+' ימים';
+}
+function isDriverAvailable(d){
+  if(d.status!=='unavailable') return true;
+  if(d.unavailableUntil){
+    // available again once the "until" date has passed
+    const until=new Date(d.unavailableUntil+'T23:59:59').getTime();
+    if(Date.now()>until) return true;
+  }
+  return false;
+}
+// rides done/assigned by a driver
+function driverRides(id){ return state.rides.filter(r=>r.driverId===id && r.status!=='open'); }
+function ridesInDays(id,days){
+  const cut=Date.now()-days*86400000;
+  return driverRides(id).filter(r=>(r.assignedAt||r.createdAt)>=cut).length;
+}
+function lastRideTs(id){
+  const rs=driverRides(id); if(!rs.length) return null;
+  return Math.max(...rs.map(r=>r.assignedAt||r.createdAt));
+}
+function totalRides(id){ return driverRides(id).length; }
+
+/* ================= TABS ================= */
+document.getElementById('tabs').addEventListener('click',e=>{
+  const t=e.target.closest('.tab'); if(!t) return;
+  document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));
+  t.classList.add('active');
+  const tab=t.dataset.tab;
+  ['new','rides','drivers','dash'].forEach(id=>{
+    document.getElementById('tab-'+id).classList.toggle('hidden', id!==tab);
+  });
+  if(tab==='rides') renderRides();
+  if(tab==='drivers') renderDrivers();
+  if(tab==='dash') renderDash();
+});
+
+/* ================= NEW RIDE / MATCHING ================= */
+function findDrivers(){
+  const dest=document.getElementById('rDest').value.trim();
+  const date=document.getElementById('rDate').value;
+  const time=document.getElementById('rTime').value;
+  if(!dest){ toast('נא למלא יעד','err'); return; }
+  if(!time){ toast('נא למלא שעה','err'); return; }
+
+  const target=timeToMin(time);
+  const avail=state.drivers.filter(isDriverAvailable);
+
+  // score each available driver by hour proximity
+  const scored=avail.map(d=>{
+    let best=Infinity;
+    (d.hours||[]).forEach(h=>{ const diff=Math.abs(timeToMin(h)-target); if(diff<best) best=diff; });
+    return {d, diff:best};
+  }).filter(x=>x.diff<=90); // within 90 min window
+
+  // priority sort: least-recent first, then fewer rides in 30d, then fewer total
+  function prioSort(a,b){
+    const la=lastRideTs(a.d.id)||0, lb=lastRideTs(b.d.id)||0;
+    if(la!==lb) return la-lb;                       // older last-ride first (never=0=top)
+    const ra=ridesInDays(a.d.id,30), rb=ridesInDays(b.d.id,30);
+    if(ra!==rb) return ra-rb;
+    return totalRides(a.d.id)-totalRides(b.d.id);
+  }
+  const exact=scored.filter(x=>x.diff===0).sort(prioSort);
+  const near =scored.filter(x=>x.diff>0).sort((a,b)=> a.diff-b.diff || prioSort(a,b));
+
+  currentRideDraft={dest,date,time,
+    who:document.getElementById('rWho').value.trim(),
+    phone:document.getElementById('rPhone').value.trim(),
+    note:document.getElementById('rNote').value.trim()};
+
+  const card=document.getElementById('candCard');
+  card.classList.remove('hidden');
+  document.getElementById('candSub').textContent = `${dest} · ${date? fmtDateShort(new Date(date).getTime()):''} · ${time}`;
+  const exWrap=document.getElementById('candExact');
+  const nrWrap=document.getElementById('candNear');
+  const emptyEl=document.getElementById('candEmpty');
+  const nearWrap=document.getElementById('candNearWrap');
+
+  exWrap.innerHTML=''; nrWrap.innerHTML='';
+  if(exact.length===0 && near.length===0){
+    emptyEl.classList.remove('hidden'); nearWrap.classList.add('hidden');
+    // still allow saving as open ride
+    exWrap.innerHTML = `<div class="row" style="margin-top:10px"><button class="btn ghost" onclick="saveOpenRide()">📌 רשום כנסיעה פתוחה (ללא נהג)</button></div>`;
+    card.scrollIntoView({behavior:'smooth'}); return;
+  }
+  emptyEl.classList.add('hidden');
+
+  exact.forEach((x,i)=> exWrap.insertAdjacentHTML('beforeend', candHtml(x,i,true)) );
+  if(exact.length===0) exWrap.innerHTML='<div class="hint" style="margin-bottom:10px">אין התאמה מדויקת לשעה — ראה נהגים בשעה קרובה למטה 👇</div>';
+
+  if(near.length){ nearWrap.classList.remove('hidden'); near.forEach((x,i)=> nrWrap.insertAdjacentHTML('beforeend', candHtml(x, exact.length+i, false))); }
+  else nearWrap.classList.add('hidden');
+
+  // add "open ride" fallback button
+  exWrap.insertAdjacentHTML('beforeend', `<div class="row" style="margin-top:6px"><button class="btn ghost sm" onclick="saveOpenRide()">📌 או רשום כנסיעה פתוחה בלי לשבץ עכשיו</button></div>`);
+  card.scrollIntoView({behavior:'smooth'});
+}
+
+function candHtml(x,idx,exact){
+  const d=x.d;
+  const last=lastRideTs(d.id);
+  const w7=ridesInDays(d.id,7);
+  let why;
+  if(!last) why='⭐ עדיין לא עשה אף נסיעה — עדיפות עליונה';
+  else if(w7===0) why='⭐ לא נסע השבוע — עדיפות גבוהה';
+  else why='נסע לאחרונה '+daysAgoTxt(last);
+  const diffTxt = exact ? '<span class="pill exact">התאמה מדויקת</span>'
+                        : '<span class="pill near">±'+x.diff+' דק׳</span>';
+  return `<div class="cand ${idx===0?'top':''}">
+    <div class="rank">${idx+1}</div>
+    <div class="info">
+      <div class="nm">${esc(d.name)} ${diffTxt}</div>
+      <div class="meta">
+        <span>📞 ${esc(d.phone||'—')}</span>
+        <span>🕒 שעות: ${(d.hours||[]).join(', ')||'—'}</span>
+        <span>השבוע: ${w7} נסיעות</span>
+      </div>
+      <div class="whyrec">${why}</div>
+      ${d.note?`<div class="hint">📝 ${esc(d.note)}</div>`:''}
+    </div>
+    <div class="acts">
+      ${d.phone?`<a class="btn green sm" href="tel:${d.phone.replace(/[^0-9+]/g,'')}">📞 חייג</a>`:''}
+      <button class="btn gold sm" onclick="assignTo('${d.id}')">✅ שבץ</button>
+    </div>
+  </div>`;
+}
+
+let currentRideDraft=null;
+function assignTo(driverId){
+  if(!currentRideDraft) return;
+  const now=Date.now();
+  state.rides.push({
+    id:uid(), destination:currentRideDraft.dest, date:currentRideDraft.date,
+    time:currentRideDraft.time, driverId, who:currentRideDraft.who, phone:currentRideDraft.phone,
+    note:currentRideDraft.note, status:'assigned', createdAt:now, assignedAt:now, doneAt:null
+  });
+  save();
+  const d=driverById(driverId);
+  toast('✅ הנסיעה שובצה ל'+d.name, 'ok');
+  resetNewRide();
+  updateBadges();
+}
+function saveOpenRide(){
+  if(!currentRideDraft) return;
+  const now=Date.now();
+  state.rides.push({
+    id:uid(), destination:currentRideDraft.dest, date:currentRideDraft.date,
+    time:currentRideDraft.time, driverId:null, who:currentRideDraft.who, phone:currentRideDraft.phone,
+    note:currentRideDraft.note, status:'open', createdAt:now, assignedAt:null, doneAt:null
+  });
+  save(); toast('📌 הנסיעה נרשמה כפתוחה','ok'); resetNewRide(); updateBadges();
+}
+function resetNewRide(){
+  ['rDest','rTime','rWho','rPhone','rNote'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('rDate').value=isoDate(new Date());
+  document.getElementById('candCard').classList.add('hidden');
+  currentRideDraft=null;
+}
+
+/* ================= RIDES TAB ================= */
+function renderRides(){
+  const open=state.rides.filter(r=>r.status==='open').sort((a,b)=>b.createdAt-a.createdAt);
+  const asg =state.rides.filter(r=>r.status==='assigned').sort((a,b)=>b.assignedAt-a.assignedAt);
+  let done =state.rides.filter(r=>r.status==='done').sort((a,b)=>(b.doneAt||b.assignedAt)-(a.doneAt||a.assignedAt));
+  const q=document.getElementById('histSearch').value.trim();
+  if(q){ done=done.filter(r=>{const d=driverById(r.driverId); return (r.destination||'').includes(q)||(d&&d.name.includes(q));}); }
+
+  // OPEN
+  const oEl=document.getElementById('openRides');
+  if(open.length===0) oEl.innerHTML='<div class="empty">אין נסיעות פתוחות כרגע 🎉</div>';
+  else oEl.innerHTML=open.map(r=>rideRow(r,'open')).join('');
+
+  // ASSIGNED
+  const aEl=document.getElementById('assignedRides');
+  if(asg.length===0) aEl.innerHTML='<div class="empty">אין נסיעות בטיפול</div>';
+  else aEl.innerHTML=asg.map(r=>rideRow(r,'assigned')).join('');
+
+  // DONE
+  const dEl=document.getElementById('doneRides');
+  document.getElementById('histCount').textContent=`(${state.rides.filter(r=>r.status==='done').length} נסיעות)`;
+  if(done.length===0) dEl.innerHTML='<div class="empty">אין היסטוריה עדיין</div>';
+  else dEl.innerHTML=done.map(r=>rideRow(r,'done')).join('');
+}
+function rideRow(r,kind){
+  const d=driverById(r.driverId);
+  const when=`${r.date?fmtDateShort(new Date(r.date).getTime()):''} · ${r.time||''}`;
+  let acts='';
+  if(kind==='open'){
+    acts=`<button class="btn gold sm" onclick="quickAssign('${r.id}')">בחר נהג</button>
+          <button class="btn danger tiny" onclick="askDelete('${r.id}')">מחק</button>`;
+  }else if(kind==='assigned'){
+    acts=`${d&&d.phone?`<a class="btn green sm" href="tel:${d.phone.replace(/[^0-9+]/g,'')}">📞</a>`:''}
+          <button class="btn green sm" onclick="markDone('${r.id}')">✔ בוצע</button>
+          <button class="btn ghost tiny" onclick="unassign('${r.id}')">בטל שיבוץ</button>`;
+  }else{
+    acts=`<button class="btn danger tiny" onclick="askDelete('${r.id}')">מחק</button>`;
+  }
+  return `<div class="cand">
+    <div class="info">
+      <div class="nm">🏥 ${esc(r.destination)} <span class="pill grey">${when}</span></div>
+      <div class="meta">
+        <span>👤 נהג: ${d?esc(d.name):'<span style="color:var(--gold-soft)">לא משובץ</span>'}</span>
+        ${r.who?`<span>🧍 נוסע: ${esc(r.who)}</span>`:''}
+        ${r.phone?`<span>📞 ${esc(r.phone)}</span>`:''}
+        ${kind==='done'?`<span>✅ בוצע: ${fmtDate(r.doneAt||r.assignedAt)}</span>`:''}
+      </div>
+      ${r.note?`<div class="hint">📝 ${esc(r.note)}</div>`:''}
+    </div>
+    <div class="acts">${acts}</div>
+  </div>`;
+}
+function markDone(id){ const r=state.rides.find(x=>x.id===id); if(r){ r.status='done'; r.doneAt=Date.now(); save(); toast('✔ סומן כבוצע','ok'); renderRides(); updateBadges(); } }
+function unassign(id){ const r=state.rides.find(x=>x.id===id); if(r){ r.status='open'; r.driverId=null; r.assignedAt=null; save(); renderRides(); updateBadges(); } }
+
+/* quick-assign from an open ride: reuse matcher */
+function quickAssign(rideId){
+  const r=state.rides.find(x=>x.id===rideId); if(!r) return;
+  // move to New-ride tab prefilled, then run matcher
+  document.querySelector('.tab[data-tab="new"]').click();
+  document.getElementById('rDest').value=r.destination;
+  document.getElementById('rDate').value=r.date||isoDate(new Date());
+  document.getElementById('rTime').value=r.time;
+  document.getElementById('rWho').value=r.who||'';
+  document.getElementById('rPhone').value=r.phone||'';
+  document.getElementById('rNote').value=r.note||'';
+  pendingOpenRideId=rideId;
+  findDrivers();
+  toast('בחר נהג לשיבוץ הנסיעה','ok');
+}
+let pendingOpenRideId=null;
+// override assignTo to also consume a pending open ride
+const _assignTo=assignTo;
+assignTo=function(driverId){
+  if(pendingOpenRideId){
+    const r=state.rides.find(x=>x.id===pendingOpenRideId);
+    if(r){ r.driverId=driverId; r.status='assigned'; r.assignedAt=Date.now();
+      save(); const d=driverById(driverId); toast('✅ שובץ '+d.name,'ok');
+      pendingOpenRideId=null; resetNewRide(); updateBadges(); return; }
+  }
+  _assignTo(driverId);
+};
+
+/* ================= DRIVERS TAB ================= */
+function renderDrivers(){
+  const q=document.getElementById('drvSearch').value.trim();
+  let list=[...state.drivers];
+  if(q) list=list.filter(d=>d.name.includes(q)||(d.phone||'').includes(q));
+  const body=document.getElementById('driversBody');
+  document.getElementById('drvCountHint').textContent=`${state.drivers.length} נהגים · ${state.drivers.filter(isDriverAvailable).length} זמינים`;
+  if(list.length===0){ body.innerHTML='<tr><td colspan="8" class="empty">אין נהגים</td></tr>'; return; }
+  body.innerHTML=list.map(d=>{
+    const avail=isDriverAvailable(d);
+    const statusPill = avail
+      ? '<span class="pill active">● פעיל</span>'
+      : `<span class="pill off">✕ לא זמין${d.unavailableUntil?' עד '+fmtDateShort(new Date(d.unavailableUntil).getTime()):''}</span>`;
+    const last=lastRideTs(d.id);
+    return `<tr>
+      <td><b>${esc(d.name)}</b>${d.note?`<div class="hint">📝 ${esc(d.note)}</div>`:''}</td>
+      <td dir="ltr" style="text-align:right">${esc(d.phone||'—')}</td>
+      <td><div class="hours-chips">${(d.hours||[]).map(h=>`<span class="hchip">${h}</span>`).join('')||'—'}</div></td>
+      <td>${ridesInDays(d.id,7)}</td>
+      <td>${totalRides(d.id)}</td>
+      <td>${daysAgoTxt(last)}</td>
+      <td>${statusPill}</td>
+      <td style="white-space:nowrap">
+        <button class="btn ghost tiny" onclick="openStatusModal('${d.id}')">סטטוס</button>
+        <button class="btn ghost tiny" onclick="openDriverModal('${d.id}')">✏️</button>
+        <button class="btn danger tiny" onclick="askDeleteDriver('${d.id}')">🗑</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+let editingDriverId=null;
+function openDriverModal(id){
+  editingDriverId=id||null;
+  const d=id?driverById(id):null;
+  document.getElementById('drvModalTitle').textContent=id?'עריכת נהג':'הוספת נהג';
+  document.getElementById('dName').value=d?d.name:'';
+  document.getElementById('dPhone').value=d?d.phone:'';
+  document.getElementById('dNote').value=d?(d.note||''):'';
+  const picker=document.getElementById('hourPicker');
+  const sel=new Set(d?d.hours:[]);
+  picker.innerHTML=HOUR_OPTIONS.map(h=>`<span class="hour-opt ${sel.has(h)?'on':''}" data-h="${h}" onclick="this.classList.toggle('on')">${h}</span>`).join('');
+  openModal('driverOverlay');
+}
+function saveDriver(){
+  const name=document.getElementById('dName').value.trim();
+  if(!name){ toast('נא למלא שם','err'); return; }
+  const phone=document.getElementById('dPhone').value.trim();
+  const note=document.getElementById('dNote').value.trim();
+  const hours=[...document.querySelectorAll('#hourPicker .hour-opt.on')].map(e=>e.dataset.h).sort();
+  if(editingDriverId){
+    const d=driverById(editingDriverId);
+    Object.assign(d,{name,phone,note,hours});
+    toast('✅ הנהג עודכן','ok');
+  }else{
+    state.drivers.push({id:uid(),name,phone,note,hours,status:'active',unavailableUntil:'',createdAt:Date.now()});
+    toast('✅ הנהג נוסף','ok');
+  }
+  save(); closeModal('driverOverlay'); renderDrivers(); updateBadges();
+}
+function askDeleteDriver(id){
+  const d=driverById(id);
+  confirmDo('מחיקת נהג', `למחוק את "${d.name}"? הנסיעות ההיסטוריות שלו יישמרו אך ללא שם.`, ()=>{
+    state.drivers=state.drivers.filter(x=>x.id!==id);
+    save(); renderDrivers(); updateBadges(); toast('הנהג נמחק','ok');
+  });
+}
+
+/* status modal */
+let statusDriverId=null, statusValue='active';
+function openStatusModal(id){
+  statusDriverId=id; const d=driverById(id);
+  document.getElementById('stName').textContent=d.name;
+  statusValue=d.status||'active';
+  document.getElementById('stUntil').value=d.unavailableUntil||'';
+  reflectStatusButtons();
+  openModal('statusOverlay');
+}
+function setStatus(v){ statusValue=v; reflectStatusButtons(); }
+function reflectStatusButtons(){
+  document.getElementById('untilWrap').style.opacity = statusValue==='unavailable'?'1':'.4';
+}
+function saveStatus(){
+  const d=driverById(statusDriverId);
+  d.status=statusValue;
+  d.unavailableUntil = statusValue==='unavailable' ? document.getElementById('stUntil').value : '';
+  save(); closeModal('statusOverlay'); renderDrivers(); updateBadges();
+  toast('✅ הסטטוס עודכן','ok');
+}
+
+/* ================= DASHBOARD ================= */
+function renderDash(){
+  const doneAll=state.rides.filter(r=>r.status==='done'||r.status==='assigned');
+  document.getElementById('stTotal').textContent=doneAll.length;
+  const week=state.rides.filter(r=>r.status!=='open' && (r.assignedAt||r.createdAt)>=Date.now()-7*86400000).length;
+  document.getElementById('stWeek').textContent=week;
+  document.getElementById('stOpen').textContent=state.rides.filter(r=>r.status==='open').length;
+
+  // top this week
+  const wk=state.drivers.map(d=>({d,n:ridesInDays(d.id,7)})).filter(x=>x.n>0).sort((a,b)=>b.n-a.n);
+  const topEl=document.getElementById('topWeek');
+  if(wk.length===0) topEl.innerHTML='<div class="empty">אף אחד עדיין לא נסע השבוע</div>';
+  else{
+    const max=wk[0].n;
+    topEl.innerHTML=wk.slice(0,10).map((x,i)=>`
+      <div class="bar-row">
+        <div class="bn">${i===0?'🥇 ':i===1?'🥈 ':i===2?'🥉 ':''}${esc(x.d.name)}</div>
+        <div class="bar-track"><div class="bar-fill" style="width:${Math.max(12,x.n/max*100)}%">${x.n}</div></div>
+      </div>`).join('');
+  }
+
+  // idle drivers (available, 0 rides this week)
+  const idle=state.drivers.filter(d=>isDriverAvailable(d) && ridesInDays(d.id,7)===0)
+    .sort((a,b)=>(lastRideTs(a.id)||0)-(lastRideTs(b.id)||0));
+  const idleEl=document.getElementById('idleDrivers');
+  if(idle.length===0) idleEl.innerHTML='<div class="empty">כל הנהגים הזמינים נסעו השבוע 👏</div>';
+  else idleEl.innerHTML='<div class="row">'+idle.map(d=>{
+    const last=lastRideTs(d.id);
+    return `<span class="pill ${!last?'gold':'grey'}" title="${daysAgoTxt(last)}">${esc(d.name)} · ${!last?'לא נסע מעולם':daysAgoTxt(last)}</span>`;
+  }).join('')+'</div>';
+
+  // full table
+  const rows=[...state.drivers].sort((a,b)=>totalRides(b.id)-totalRides(a.id));
+  document.getElementById('dashTableBody').innerHTML=rows.map(d=>`
+    <tr><td><b>${esc(d.name)}</b> ${!isDriverAvailable(d)?'<span class="pill off">לא זמין</span>':''}</td>
+    <td>${totalRides(d.id)}</td><td>${ridesInDays(d.id,7)}</td><td>${ridesInDays(d.id,30)}</td>
+    <td>${daysAgoTxt(lastRideTs(d.id))}</td></tr>`).join('');
+}
+
+/* ================= BADGES ================= */
+function updateBadges(){
+  document.getElementById('badgeOpen').textContent=state.rides.filter(r=>r.status==='open').length;
+  document.getElementById('badgeDrivers').textContent=state.drivers.length;
+  const active=document.querySelector('.tab.active').dataset.tab;
+  if(active==='rides') renderRides();
+  if(active==='drivers') renderDrivers();
+  if(active==='dash') renderDash();
+}
+
+/* ================= DELETE RIDE ================= */
+function askDelete(id){
+  const r=state.rides.find(x=>x.id===id);
+  confirmDo('מחיקת נסיעה', `למחוק את הנסיעה ל"${r.destination}"?`, ()=>{
+    state.rides=state.rides.filter(x=>x.id!==id); save(); renderRides(); updateBadges(); toast('הנסיעה נמחקה','ok');
+  });
+}
+
+/* ================= CSV EXPORT ================= */
+function exportCSV(){
+  const done=state.rides.filter(r=>r.status==='done');
+  const rows=[['תאריך','שעה','יעד','נהג','טלפון נהג','נוסע','הערה']];
+  done.forEach(r=>{ const d=driverById(r.driverId);
+    rows.push([r.date||'',r.time||'',r.destination||'',d?d.name:'',d?d.phone:'',r.who||'',r.note||'']); });
+  const csv='﻿'+rows.map(row=>row.map(c=>`"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  downloadFile('נסיעות_דרכי_חסד.csv', csv, 'text/csv');
+}
+
+/* ================= BACKUP / RESTORE ================= */
+function doBackup(){
+  downloadFile('גיבוי_דרכי_חסד_'+isoDate(new Date())+'.json', JSON.stringify(state,null,2), 'application/json');
+  toast('💾 גיבוי הורד','ok');
+}
+function triggerRestore(){ document.getElementById('restoreFile').click(); }
+function doRestore(ev){
+  const f=ev.target.files[0]; if(!f) return;
+  const rd=new FileReader();
+  rd.onload=()=>{ try{ const data=JSON.parse(rd.result);
+      if(!data.drivers||!data.rides) throw 0;
+      confirmDo('שחזור מגיבוי','זה יחליף את כל הנתונים הנוכחיים. להמשיך?',()=>{
+        state=data; save(); updateBadges(); renderDrivers(); toast('✅ שוחזר בהצלחה','ok');
+      });
+    }catch(e){ toast('קובץ גיבוי לא תקין','err'); } };
+  rd.readAsText(f); ev.target.value='';
+}
+function downloadFile(name,content,type){
+  const blob=new Blob([content],{type}); const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url; a.download=name; a.click(); URL.revokeObjectURL(url);
+}
+
+/* ================= UI UTILS ================= */
+function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function openModal(id){ document.getElementById(id).classList.add('show'); }
+function closeModal(id){ document.getElementById(id).classList.remove('show'); }
+document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{ if(e.target===o) o.classList.remove('show'); }));
+let toastTimer=null;
+function toast(msg,kind){
+  const t=document.getElementById('toast'); t.textContent=msg; t.className='show '+(kind||'');
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.className='',2600);
+}
+let cfAction=null;
+function confirmDo(title,desc,action){
+  document.getElementById('cfTitle').textContent=title;
+  document.getElementById('cfDesc').textContent=desc;
+  cfAction=action; openModal('confirmOverlay');
+}
+document.getElementById('cfYes').onclick=()=>{ if(cfAction) cfAction(); closeModal('confirmOverlay'); cfAction=null; };
+
+/* ================= INIT ================= */
+load();
+document.getElementById('rDate').value=isoDate(new Date());
+updateBadges();
+renderDrivers();
+</script>
+</body>
+</html>
