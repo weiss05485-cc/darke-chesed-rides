@@ -250,6 +250,12 @@
       </div>
     </div>
 
+    <div class="card">
+      <h2>🔎 חיפוש נהג לפי שם <small>לשיבוץ ידני של נהג ספציפי לנסיעה</small></h2>
+      <input id="newDrvSearch" placeholder="חיפוש נהג לפי שם או טלפון..." style="max-width:320px" oninput="renderNewDrvSearch()">
+      <div id="newDrvResults" style="margin-top:12px"></div>
+    </div>
+
     <div class="card hidden" id="candCard">
       <h2>🎯 נהגים זמינים <small id="candSub"></small></h2>
       <div id="candExact"></div>
@@ -610,7 +616,51 @@ function resetNewRide(){
   ['rDest','rTime','rWho','rPhone','rNote'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('rDate').value=isoDate(new Date());
   document.getElementById('candCard').classList.add('hidden');
+  document.getElementById('newDrvSearch').value='';
+  renderNewDrvSearch();
   currentRideDraft=null;
+}
+
+/* manual driver search inside the New-ride tab */
+function renderNewDrvSearch(){
+  const q=document.getElementById('newDrvSearch').value.trim();
+  const el=document.getElementById('newDrvResults');
+  if(!q){ el.innerHTML=''; return; }
+  const list=state.drivers.filter(d=>d.name.includes(q)||(d.phone||'').includes(q));
+  if(list.length===0){ el.innerHTML='<div class="empty">לא נמצא נהג</div>'; return; }
+  el.innerHTML=list.map(d=>{
+    const avail=isDriverAvailable(d);
+    const statusPill = avail
+      ? '<span class="pill active">● פעיל</span>'
+      : `<span class="pill off">✕ לא זמין${d.unavailableUntil?' עד '+fmtDateShort(new Date(d.unavailableUntil).getTime()):''}</span>`;
+    return `<div class="cand">
+      <div class="info">
+        <div class="nm">${esc(d.name)} ${statusPill}</div>
+        <div class="meta">
+          <span>📞 ${esc(d.phone||'—')}</span>
+          <span>🕒 שעות: ${(d.hours||[]).join(', ')||'—'}</span>
+          <span>השבוע: ${ridesInDays(d.id,7)} נסיעות</span>
+          <span>נסיעה אחרונה: ${daysAgoTxt(lastRideTs(d.id))}</span>
+        </div>
+        ${d.note?`<div class="hint">📝 ${esc(d.note)}</div>`:''}
+      </div>
+      <div class="acts">
+        ${d.phone?`<a class="btn green sm" href="tel:${d.phone.replace(/[^0-9+]/g,'')}">📞 חייג</a>`:''}
+        <button class="btn gold sm" onclick="manualAssign('${d.id}')">✅ שבץ</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function manualAssign(driverId){
+  const dest=document.getElementById('rDest').value.trim();
+  const time=document.getElementById('rTime').value;
+  if(!dest){ toast('נא למלא יעד','err'); return; }
+  if(!time){ toast('נא למלא שעה','err'); return; }
+  currentRideDraft={dest, date:document.getElementById('rDate').value, time,
+    who:document.getElementById('rWho').value.trim(),
+    phone:document.getElementById('rPhone').value.trim(),
+    note:document.getElementById('rNote').value.trim()};
+  assignTo(driverId);
 }
 
 /* ================= RIDES TAB ================= */
